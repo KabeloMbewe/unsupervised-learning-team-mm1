@@ -167,13 +167,27 @@ def predict_ratings(data):
     return data
 
 
-print("Making parallel predictions...")
-parallel_preds = applyParallel(combined_data.groupby("userId"), predict_ratings)
+def make_submission_file(df, filename="submission.csv"):
+    df.reset_index(drop=True)
+    df.drop(df[df.rating.notna()].index, inplace=True)
+    df["rating"] = df["pred"]
+    df["Id"] = df.userId.astype(str) + "_" + df.movieId.astype(str)
+    df[["Id", "rating"]].to_csv(filename, index=False, chunksize=100_000)
 
-print(parallel_preds)
+
+def predict_parallel():
+    print("Making parallel predictions...")
+    preds = applyParallel(combined_data.groupby("userId"), predict_ratings)
+    make_submission_file(preds, "generated/submission_parallel.csv")
 
 
-print("Making predictions...")
-predictions_serial = combined_data.groupby("userId").apply(predict_ratings)
+# def predict_serial():
+#     print("Making predictions...")
+#     preds = combined_data.groupby("userId").apply(predict_ratings)
+#     make_submission_file(preds, "generated/submission_serial.csv")
 
-print(parallel_preds[parallel_preds != predictions_serial])
+
+if __name__ == "__main__":
+    predict_parallel()
+    # predict_serial()
+    print("Done")
