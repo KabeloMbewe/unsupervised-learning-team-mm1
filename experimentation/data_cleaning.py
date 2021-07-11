@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 
+from helpers import runParallel
+
 # read csv files
 def clean_genome():
     genome_scores = pd.read_csv("data/genome_scores.csv")
@@ -58,6 +60,9 @@ def clean_movies():
     movies["title"] = movies.title.str.strip().str.replace(
         r"\(([0-9]{4})\)", "", regex=True
     )
+    movies["title"] = (
+        movies["title"].str.strip().str.replace(r"(.*), The$", r"The \1", regex=True)
+    )
     movies["genres"] = movies.genres.str.replace(
         "(no genres listed)", "unknown", regex=False
     )
@@ -68,10 +73,6 @@ def clean_movies():
     )
 
 
-print("Cleaning genome data")
-clean_genome()
-print("Cleaning imdb data")
-clean_imdb()
-print("Cleaning movies data")
-clean_movies()
-print("Done!")
+if __name__ == "__main__":
+    runParallel([clean_genome, clean_imdb, clean_movies])
+    print("Done!")

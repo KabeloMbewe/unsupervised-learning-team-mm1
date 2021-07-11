@@ -1,6 +1,9 @@
 import datetime
 import time
+from multiprocessing import cpu_count
 from typing import Callable, List, Tuple
+
+from joblib import Parallel, delayed
 
 
 def time_steps(steps: List[Tuple[Callable, ...]]):
@@ -27,3 +30,8 @@ def time_steps(steps: List[Tuple[Callable, ...]]):
 
 def flatten_list(lst):
     return [item for sublist in lst for item in sublist]
+
+
+def runParallel(funcs: List[Callable]):
+    jobs = min(len(funcs), cpu_count())
+    Parallel(n_jobs=jobs)(delayed(func)() for func in funcs)
