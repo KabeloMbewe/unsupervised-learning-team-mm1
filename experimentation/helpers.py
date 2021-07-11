@@ -4,6 +4,7 @@ from multiprocessing import cpu_count
 from typing import Callable, List, Tuple
 
 from joblib import Parallel, delayed
+import pandas as pd
 
 
 def time_steps(steps: List[Tuple[Callable, ...]]):
@@ -35,3 +36,8 @@ def flatten_list(lst):
 def runParallel(funcs: List[Callable]):
     jobs = min(len(funcs), cpu_count())
     Parallel(n_jobs=jobs)(delayed(func)() for func in funcs)
+
+
+def applyParallel(grouped, func):
+    results = Parallel(n_jobs=cpu_count())(delayed(func)(group) for _, group in grouped)
+    return pd.concat(results)
