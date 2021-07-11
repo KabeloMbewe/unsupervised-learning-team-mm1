@@ -135,13 +135,12 @@ def remove_diag(x):
 
 
 def predict_ratings(data):
-    history_idx = data.rating.notna()
+    history = data[data.rating.notna()]
+    to_predict = data[data.rating.isna()]
+
     to_predict_idx = data.rating.isna()
 
-    history_len = history_idx.sum()
-    to_predict_len = to_predict_idx.sum()
-
-    if history_len == 1:
+    if len(history) == 1:
         print(data.userId.unique())
         mean_guesses = mean_movie_rating_by_movie_id.loc[
             to_predict.movieId.values
@@ -150,22 +149,21 @@ def predict_ratings(data):
         data.loc[to_predict_idx, "pred"] = mean_guesses
         return data
 
-    if to_predict_len == 0:
+    if len(to_predict) == 0:
         return data
 
     idxs = [mid_to_idx[i] for i in data.movieId]
 
-    historic_ratings = data[history_idx].rating.values
+    historic_ratings = history.rating.values
 
     similarity_matrix = remove_diag(cosine_similarity(norm_vecs[idxs, :]))
-    sim_matrix = similarity_matrix[history_len:, :history_len]
+    sim_matrix = similarity_matrix[len(history) :, : len(history)]
 
     sim_totals = sim_matrix.sum(axis=1)
-    ratings = np.tile(history.rating, (to_predict_len, 1))
+    ratings = np.tile(history.rating, (len(to_predict.rating), 1))
     weighted_sums = np.einsum("ij,ij->i", sim_matrix, ratings)
 
     data.loc[to_predict_idx, "pred"] = weighted_sums / sim_totals
-
     return data
 
 
@@ -178,4 +176,4 @@ print(parallel_preds)
 print("Making predictions...")
 predictions_serial = combined_data.groupby("userId").apply(predict_ratings)
 
-print(parallel_preds == predictions_serial)
+print(parallel_preds[parallel_preds != predictions_serial])

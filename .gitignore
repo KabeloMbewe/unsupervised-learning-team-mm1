@@ -130,5 +130,9 @@ dmypy.json
 
 .DS_Store
 data/
-*.csv
-*.csv.*
+**.csv
+**.csv.*
+.ipynb_checkpoints/
+experimentation/cleaned
+experimentation/data
+experimentation/generated
