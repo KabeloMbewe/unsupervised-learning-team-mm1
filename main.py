@@ -23,6 +23,6 @@ cross_validate(
     cv=5,
     return_train_measures=True,
     verbose=True,
-    n_jobs=-2,
-    pre_dispatch=8,
+    n_jobs=1,
+    # pre_dispatch=4,
 )
