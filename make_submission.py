@@ -12,7 +12,7 @@ import pandas as pd
 from typing import Callable
 
 print("Loading model...")
-# _, algo = load("model.pkl")
+_, algo = load("model.pkl")
 
 print("Loading prediction data...")
 test = pd.read_csv("data/test.csv")
@@ -23,7 +23,9 @@ print("Predicting...")
 def split_map_parallel(lst, func: Callable, n_jobs: int = -1):
     n_jobs = n_jobs if n_jobs > 0 else cpu_count()
     groups = np.array_split(lst, n_jobs)
-    results = Parallel(n_jobs=n_jobs)(delayed(func)(lst_grp) for lst_grp in groups)
+    results = Parallel(n_jobs=n_jobs, backend="threading", mmap_mode="shared")(
+        delayed(func)(lst_grp) for lst_grp in groups
+    )
     return results
 
 
