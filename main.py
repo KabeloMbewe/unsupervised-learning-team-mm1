@@ -3,37 +3,27 @@ from surprise import Dataset, Reader
 from surprise import accuracy
 from surprise.model_selection import cross_validate, train_test_split
 
-reader = Reader(
-    name=None,
-    line_format="user item rating",
-    sep=",",
-    rating_scale=(1, 5),
-    skip_lines=1,
-)
+from surprise.dump import load
+import pandas as pd
 
-print("Loading data...")
-data = Dataset.load_from_file("data/train.csv", reader)
+print("Loading model...")
+algo: SVD = load("model.pkl")
 
-print("Building sets...")
-train_set, test_set = train_test_split(data, test_size=0.25)
+print("Loading prediction data...")
+test = pd.read_csv("data/test.csv")
 
-algo = SVDpp(n_factors=1)
+preds = dict()
 
-print("Fitting...")
-algo.fit(train_set)
+print("Predicting...")
+total = len(test)
 
-print("Testing...")
-predictions = algo.test(testset)
-print("RMSE:", accuracy.rmse(predictions))
+for idx, (uid, mid) in enumerate(test.to_records(index=False)):
+    prediction = algo.predict(uid, mid).est
 
-# print("Running cross-validation")
-# cross_validate(
-#     algo=algo,
-#     data=data,
-#     measures=["RMSE", "MAE"],
-#     cv=1,
-#     return_train_measures=True,
-#     verbose=True,
-#     n_jobs=1,
-#     pre_dispatch=2,
-# )
+    pred_id = f"{uid}_{mid}"
+    preds[pred_id] = prediction
+
+    if ((idx + 1) % 10_000) == 0:
+        print("[progress]", round(idx / total * 100.0, 1), "%")
+
+pd.Series(preds).to_csv("submission.csv")
