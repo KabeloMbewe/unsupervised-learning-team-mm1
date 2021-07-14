@@ -3,8 +3,11 @@ import time
 from multiprocessing import cpu_count
 from typing import Callable, List, Tuple
 
-from joblib import Parallel, delayed
+import numpy as np
 import pandas as pd
+from joblib import Parallel, delayed
+from pandas.api.types import CategoricalDtype
+from scipy.sparse import csr_matrix
 
 
 def time_steps(steps: List[Tuple[Callable, ...]]):
@@ -41,3 +44,16 @@ def runParallel(funcs: List[Callable]):
 def applyParallel(grouped, func):
     results = Parallel(n_jobs=cpu_count())(delayed(func)(group) for _, group in grouped)
     return pd.concat(results)
+
+
+def sparse_pivot(df, index, columns, values) -> csr_matrix:
+    index_c = CategoricalDtype(sorted(df[index].unique()), ordered=True)
+    colum_c = CategoricalDtype(sorted(df[columns].unique()), ordered=True)
+
+    row = df[index].astype(index_c).cat.codes
+    col = df[columns].astype(colum_c).cat.codes
+
+    return csr_matrix(
+        (df[values], (row, col)),
+        shape=(index_c.categories.size, colum_c.categories.size),
+    )
