@@ -21,7 +21,14 @@ data = Dataset.load_from_file("data/train.csv", reader)
 print("Building training file")
 train_set = data.build_full_trainset()
 
+del data
+del reader
+
 algo = SVD(
+    n_factors=800,
+    n_epochs=25,
+    lr_all=0.03,
+    reg_all=0.03,
     random_state=random_state,
     verbose=True,
 )

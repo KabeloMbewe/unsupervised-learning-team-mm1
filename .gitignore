@@ -132,7 +132,7 @@ dmypy.json
 data/
 **.csv
 **.csv.*
-.ipynb_checkpoints/
-experimentation/cleaned
-experimentation/data
-experimentation/generated
+/.ipynb_checkpoints/
+cleaned/
+generated/
+cleaned/
