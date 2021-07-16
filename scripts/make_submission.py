@@ -21,7 +21,7 @@ for idx, (uid, mid) in enumerate(test.to_records(index=False)):
     pred_id = f"{uid}_{mid}"
     preds[pred_id] = est
 
-    if ((idx + 1) % 11_000) == 0:
+    if ((idx + 1) % 456_000) == 0:
         print("[progress]", round(idx / total * 100.0, 1), "%")
 
 print("Producing output csv...")
