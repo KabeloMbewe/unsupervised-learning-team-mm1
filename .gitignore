@@ -130,3 +130,9 @@ dmypy.json
 
 .DS_Store
 data/
+**.csv
+**.csv.*
+/.ipynb_checkpoints/
+cleaned/
+generated/
+cleaned/
