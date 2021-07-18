@@ -11,7 +11,7 @@ reader = Reader(
     name=None,
     line_format="user item rating",
     sep=",",
-    rating_scale=(1, 5),
+    rating_scale=(0.5, 5),
     skip_lines=1,
 )
 
