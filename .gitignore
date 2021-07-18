@@ -136,3 +136,15 @@ data/
 cleaned/
 generated/
 cleaned/
+*.pkl
+
+slides/.npmrc
+
+**/node_modules
+**/.DS_Store
+**/dist
+**/*.local
+**/index.html
+**/.remote-assets
+**/components.d.ts
+
