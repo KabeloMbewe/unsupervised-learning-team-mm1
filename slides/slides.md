@@ -7,7 +7,6 @@ aspectRatio: "16/10"
 # layout: intro-image
 title: Cover Page
 colorSchema: 'dark'
-download: true
 ---
 
 <div>
