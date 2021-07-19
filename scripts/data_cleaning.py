@@ -5,8 +5,8 @@ from helpers import runParallel
 
 # read csv files
 def clean_genome():
-    genome_scores = pd.read_csv("data/genome_scores.csv")
-    genome_tags = pd.read_csv("data/genome_tags.csv")
+    genome_scores = pd.read_csv("data/genome-scores.csv")
+    genome_tags = pd.read_csv("data/genome-tags.csv")
 
     genome_data = genome_scores.merge(genome_tags, on="tagId")
 
@@ -73,6 +73,55 @@ def clean_movies():
     )
 
 
+def build_full_combine():
+    train = pd.read_csv("data/train.csv")
+    movies = pd.read_csv("cleaned/movies.csv")
+    imdb_data = pd.read_csv("cleaned/imdb_data.csv")
+    genome_tag_vec = pd.read_csv("cleaned/genome_tag_vec.csv")
+
+    full_combine = (
+        movies.merge(imdb_data, on="movieId", how="left")
+        .merge(genome_tag_vec, on="movieId", how="left")
+        .set_index("movieId", drop=True)
+    )
+
+    normal_year_mean = full_combine[full_combine.year != 0].year.mean()
+    full_combine["year"].replace(0, normal_year_mean, inplace=True)
+
+    # movies.year.fillna(int(movies.year.median()), inplace=True)
+    # movies.genres.fillna("<unknown>", inplace=True)
+    full_combine.title = full_combine.title.str.strip().str.replace(
+        r"(.*), The$", r"The \1", regex=True
+    )
+    full_combine.title_cast.fillna("", inplace=True)
+    full_combine.director.fillna("", inplace=True)
+    full_combine.runtime.fillna(int(full_combine.runtime.median()), inplace=True)
+    full_combine.budget.fillna(int(full_combine.budget.median()), inplace=True)
+    full_combine.plot_keywords.fillna("", inplace=True)
+
+    full_combine["cast_size"] = full_combine.title_cast.str.split("|").apply(len)
+    full_combine["genre_count"] = full_combine.genres.str.split("|").apply(len)
+
+    movie_groups = train.set_index("movieId", drop=True).groupby("movieId")
+    full_combine["rating_mean"] = movie_groups.rating.mean()
+    full_combine["rating_std"] = movie_groups.rating.std().fillna(0)
+
+    q3 = movie_groups.rating.quantile(0.75)
+    q1 = movie_groups.rating.quantile(0.25)
+
+    full_combine["rating_iqr"] = q3 - q1
+    full_combine["rating_count"] = movie_groups.apply(len)
+
+    full_combine.fillna(0, inplace=True)
+
+    full_combine["movieId"] = full_combine.index.values
+    full_combine.reset_index(inplace=True, drop=True)
+    full_combine.to_csv("cleaned/full_combine.csv")
+
+
 if __name__ == "__main__":
+    print("Cleaning...")
     runParallel([clean_genome, clean_imdb, clean_movies])
+    print("Generating full-combine file")
+    build_full_combine()
     print("Done!")
