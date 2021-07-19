@@ -12,5 +12,8 @@
     "@slidev/theme-seriph": "*",
     "slidev-theme-geist": "^0.6.0"
   },
-  "name": "unsup_learn_slides"
+  "name": "unsup_learn_slides",
+  "devDependencies": {
+    "playwright-chromium": "^1.12.3"
+  }
 }

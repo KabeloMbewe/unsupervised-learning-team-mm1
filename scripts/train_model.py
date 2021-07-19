@@ -25,12 +25,19 @@ del data
 del reader
 
 algo = SVD(
-    n_factors=800,
-    n_epochs=25,
-    lr_all=0.03,
-    reg_all=0.03,
-    random_state=random_state,
-    verbose=True,
+    n_factors=10,
+    n_epochs=46,
+    biased=True,
+    init_mean=3.0352,
+    init_std_dev=0.3539,
+    lr_bu=0.008,
+    lr_bi=0.0204,
+    lr_pu=0.0176,
+    lr_qi=0.0173,
+    reg_bu=0.0896,
+    reg_bi=0.0505,
+    reg_pu=0.077,
+    reg_qi=0.0928,
 )
 
 print("Fitting...")

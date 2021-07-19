@@ -148,3 +148,5 @@ slides/.npmrc
 **/.remote-assets
 **/components.d.ts
 
+**/experiments
+**/experiments_100k
