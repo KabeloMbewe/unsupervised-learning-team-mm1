@@ -3,7 +3,7 @@ import sys
 import comet_ml
 import numpy as np
 from comet_ml import Optimizer
-from surprise import SVD, Dataset
+from surprise import SVD, Dataset, Reader
 from surprise.model_selection import cross_validate
 
 comet_ml.init(
@@ -11,14 +11,22 @@ comet_ml.init(
     project_name="movie-lens-unsup",
     workspace="profhercules",
 )
-data = Dataset.load_builtin(name="ml-100k")
+reader = Reader(
+    name=None,
+    line_format="user item rating",
+    sep=",",
+    rating_scale=(0.5, 5),
+    skip_lines=1,
+)
+print("Loading data...")
+data = Dataset.load_from_file("../data/train.csv", reader)
 
 opt = Optimizer(
     sys.argv[1],
     trials=1,
     verbose=0,
     experiment_class="OfflineExperiment",
-    offline_directory="./experiments_100k",
+    offline_directory="./experiments_full",
     log_code=False,
     log_git_patch=False,
 )
