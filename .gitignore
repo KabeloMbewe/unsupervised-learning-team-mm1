@@ -151,3 +151,4 @@ slides/.npmrc
 **/experiments
 **/experiments_100k
 **/experiments_full
+**/experiments_sampled

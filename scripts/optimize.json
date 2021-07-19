@@ -1,0 +1,48 @@
+{
+  "name": "SVD Optimizer",
+  "algorithm": "bayes",
+  "spec": {
+    "maxCombo": 2500,
+    "objective": "minimize",
+    "metric": "test_rmse",
+    "minSampleSize": 128
+  },
+  "parameters": {
+    "n_factors": {
+      "type": "integer",
+      "scalingType": "uniform",
+      "min": 10,
+      "max": 500
+    },
+    "n_epochs": {
+      "type": "integer",
+      "scalingType": "uniform",
+      "min": 5,
+      "max": 50
+    },
+    "init_mean": {
+      "type": "float",
+      "scalingType": "uniform",
+      "min": 0.0,
+      "max": 5.0
+    },
+    "init_std_dev": {
+      "type": "float",
+      "scalingType": "uniform",
+      "min": 0.001,
+      "max": 5.0
+    },
+    "lr_all": {
+      "type": "float",
+      "scalingType": "uniform",
+      "min": 0.001,
+      "max": 0.05
+    },
+    "reg_all": {
+      "type": "float",
+      "scalingType": "uniform",
+      "min": 0.01,
+      "max": 0.1
+    }
+  }
+}
