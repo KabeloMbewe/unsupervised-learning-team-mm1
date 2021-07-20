@@ -63,6 +63,9 @@ def clean_movies():
     movies["title"] = (
         movies["title"].str.strip().str.replace(r"(.*), The$", r"The \1", regex=True)
     )
+
+    movies["title"] = movies["title"] + movies.year.apply(lambda y: f" ({int(y)})")
+
     movies["genres"] = movies.genres.str.replace(
         "(no genres listed)", "unknown", regex=False
     )
@@ -93,11 +96,11 @@ def build_full_combine():
     full_combine.title = full_combine.title.str.strip().str.replace(
         r"(.*), The$", r"The \1", regex=True
     )
-    full_combine.title_cast.fillna("", inplace=True)
-    full_combine.director.fillna("", inplace=True)
+    full_combine.title_cast.fillna(" ", inplace=True)
+    full_combine.director.fillna(" ", inplace=True)
     full_combine.runtime.fillna(int(full_combine.runtime.median()), inplace=True)
     full_combine.budget.fillna(int(full_combine.budget.median()), inplace=True)
-    full_combine.plot_keywords.fillna("", inplace=True)
+    full_combine.plot_keywords.fillna(" ", inplace=True)
 
     full_combine["cast_size"] = full_combine.title_cast.str.split("|").apply(len)
     full_combine["genre_count"] = full_combine.genres.str.split("|").apply(len)
@@ -116,7 +119,10 @@ def build_full_combine():
 
     full_combine["movieId"] = full_combine.index.values
     full_combine.reset_index(inplace=True, drop=True)
-    full_combine.to_csv("cleaned/full_combine.csv")
+    full_combine.to_csv(
+        "cleaned/full_combine.csv",
+        index=False,
+    )
 
 
 if __name__ == "__main__":
