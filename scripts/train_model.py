@@ -1,4 +1,4 @@
-from surprise import SVD, SVDpp
+from surprise import SVD
 from surprise import Dataset, Reader
 from surprise.model_selection import cross_validate, train_test_split
 
